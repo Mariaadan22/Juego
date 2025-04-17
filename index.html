@@ -51,7 +51,7 @@
     <div id="setup">
       <h2>Introduce los nombres de los jugadores:</h2>
       <div id="playerInputs"></div>
-      <button onclick="addPlayerInput()">Añadir jugador</button>
+      <button onclick="addPlayerInput()"> Añadir jugador</button>
       <button onclick="startGame()">Comenzar juego</button>
     </div>
 
@@ -64,7 +64,7 @@
     <div id="results" class="hidden">
       <h2>Resultados</h2>
       <div id="ranking"></div>
-      <button onclick="nextQuestion()">Siguiente pregunta ➡️</button>
+      <button onclick="nextQuestion()">Siguiente pregunta ➔️</button>
     </div>
   </div>
 
@@ -80,11 +80,6 @@
       "...termine en la cárcel por una tontería.",
       "...mande un mensaje hot al grupo familiar sin querer.",
       "...acabe en un reality show.",
-      "...acabe soltero toda la vida.",
-      "...termine casándose con un guiri.",
-      "...sea un ludópata y pierda todo su dinero en el juego.",
-      "...se vaya de retiro espiritual.",
-      "...se haga monja/cura.",
       "...tenga un sugar daddy/mommy.",
       "...sea descubierto en OnlyFans.",
       "...haya dudado alguna vez de su sexualidad.",
@@ -93,23 +88,23 @@
       "...se líe con su profesor/a.",
       "...acabe más borracho esta noche.",
       "...se despierte en una ciudad diferente sin saber cómo llegó.",
-      "...termine comiéndose la comida del suelo.",
+      "...termine besándose con alguien en el día de hoy.",
       "...se haga pasar por influencer.",
       "...coquetee con alguien comprometido.",
       "...tenga sexo en un lugar raro.",
       "...tenga una fantasía extraña.",
       "...haya soñado con alguien que está aquí.",
       "...acabe siendo un hippie.",
-      "...olvide el nombre de su ligue.",
+      "...se haga tinder.",
       "...vuelva con su ex.",
       "...se haya liado con más de 2 personas en una noche.",
-      "...termine casado en Las Vegas.",
-      "...se duerma en mitad de una fiesta.",
+      "...consiga tener algo con su crush.",
+      "...acabe de after en un sitio random.",
       "...tenga una colección rara de algo.",
       "...use la excusa del horóscopo para todo.",
       "...intente ligar con un camarero/a para conseguir bebidas gratis.",
       "...se haga una operación estética.",
-      "...participe en una manifestación a favor de ilegalizar las toallitas para bebés .",
+      "...participe en una manifestación.",
       "...se equivoque de persona al mandar nudes.",
       "...termine matando a alguien por accidente.",
       "...haya tenido una fantasía con un personaje de dibujos animados.",
@@ -117,11 +112,13 @@
       "...acabe trabajando en un club de striptease.",
       "...se grabe un sextape.",
       "...se quede calvo primero.",
+      "...se case con un/a guiri.",
       "...acabe viviendo en otro país y nunca vuelva a España.",
       "...se tatúe la cara de Shrek en una nalga por convicción personal.",
-      "...firme una petición para reemplazar el himno nacional por la canción de 'franco tiene el culo blanco'."
+      "...se endeude por invertir en tonterías o cosas inútiles'."
     ];
 
+    let remainingQuestions = [...questions];
     let players = [];
     let votes = {};
     let currentQuestion = "";
@@ -138,7 +135,7 @@
       const inputs = document.querySelectorAll("#playerInputs input");
       players = Array.from(inputs).map(input => input.value.trim()).filter(name => name);
       if (players.length < 2) {
-        alert("¡Necesitas al menos 2 jugadores!");
+        alert("\u00a1Necesitas al menos 2 jugadores!");
         return;
       }
       nextQuestion();
@@ -147,11 +144,22 @@
     }
 
     function nextQuestion() {
+      if (remainingQuestions.length === 0) {
+        alert("\u00a1Se han acabado las preguntas!");
+        document.getElementById("results").classList.remove("hidden");
+        document.getElementById("game").classList.add("hidden");
+        document.getElementById("ranking").innerHTML = "<p>Fin del juego. No quedan más preguntas.</p>";
+        return;
+      }
+
       document.getElementById("results").classList.add("hidden");
       document.getElementById("game").classList.remove("hidden");
       votes = {};
       players.forEach(p => votes[p] = 0);
-      currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+
+      const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+      currentQuestion = remainingQuestions.splice(randomIndex, 1)[0];
+
       document.getElementById("question").innerText = "¿Quién es más probable que " + currentQuestion;
       const btnContainer = document.getElementById("playerButtons");
       btnContainer.innerHTML = "";
