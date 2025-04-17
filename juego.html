@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Quién es más probable que...?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #111;
+      color: #fff;
+    }
+    .container {
+      max-width: 600px;
+      text-align: center;
+    }
+    .hidden {
+      display: none;
+    }
+    input[type="text"] {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #e91e63;
+      color: white;
+    }
+    .players-btns button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="setup">
+      <h2>Introduce los nombres de los jugadores:</h2>
+      <div id="playerInputs"></div>
+      <button onclick="addPlayerInput()">Añadir jugador</button>
+      <button onclick="startGame()">Comenzar juego</button>
+    </div>
+
+    <div id="game" class="hidden">
+      <h2 id="question"></h2>
+      <div id="playerButtons" class="players-btns"></div>
+      <p id="timer"></p>
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>Resultados</h2>
+      <div id="ranking"></div>
+      <button onclick="nextQuestion()">Siguiente pregunta ➡️</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "...salga desnudo a la calle.",
+      "...se haga un trío.",
+      "...se bese con alguien 20 años mayor.",
+      "...tenga algo con un familiar lejano.",
+      "...se haga famoso por una razón estúpida.",
+      "...muera por hacer una estupidez.",
+      "...salga sin ponerse ropa interior.",
+      "...termine en la cárcel por una tontería.",
+      "...mande un mensaje hot al grupo familiar sin querer.",
+      "...acabe en un reality show.",
+      "...tenga un sugar daddy/mommy.",
+      "...sea descubierto en OnlyFans.",
+      "...haya dudado alguna vez de su sexualidad.",
+      "...se emborrache y pierda la ropa.",
+      "...tenga fetiches raros.",
+      "...se líe con su profesor/a.",
+      "...acabe más borracho esta noche.",
+      "...se despierte en una ciudad diferente sin saber cómo llegó.",
+      "...termine comiéndose la comida del suelo.",
+      "...se haga pasar por influencer.",
+      "...coquetee con alguien comprometido.",
+      "...tenga sexo en un lugar raro.",
+      "...tenga una fantasía extraña.",
+      "...haya soñado con alguien que está aquí.",
+      "...acabe siendo un hippie.",
+      "...olvide el nombre de su ligue.",
+      "...vuelva con su ex.",
+      "...se haya liado con más de 2 personas en una noche.",
+      "...termine casado en Las Vegas.",
+      "...se duerma en mitad de una fiesta.",
+      "...tenga una colección rara de algo.",
+      "...use la excusa del horóscopo para todo.",
+      "...intente ligar con un camarero/a para conseguir bebidas gratis.",
+      "...se haga una operación estética.",
+      "...participe en una manifestación a favor de ilegalizar las toallitas para bebés .",
+      "...se equivoque de persona al mandar nudes.",
+      "...termine matando a alguien por accidente.",
+      "...haya tenido una fantasía con un personaje de dibujos animados.",
+      "...termine en urgencias con algo metido donde no debería.",
+      "...acabe trabajando en un club de striptease.",
+      "...se grabe un sextape.",
+      "...se quede calvo primero.",
+      "...acabe viviendo en otro país y nunca vuelva a España.",
+      "...se tatúe la cara de Shrek en una nalga por convicción personal.",
+      "...firme una petición para reemplazar el himno nacional por la canción de 'franco tiene el culo blanco'."
+    ];
+
+    let players = [];
+    let votes = {};
+    let currentQuestion = "";
+    let timer;
+    let timeLeft = 20;
+
+    function addPlayerInput() {
+      const div = document.createElement("div");
+      div.innerHTML = '<input type="text" placeholder="Nombre del jugador">';
+      document.getElementById("playerInputs").appendChild(div);
+    }
+
+    function startGame() {
+      const inputs = document.querySelectorAll("#playerInputs input");
+      players = Array.from(inputs).map(input => input.value.trim()).filter(name => name);
+      if (players.length < 2) {
+        alert("¡Necesitas al menos 2 jugadores!");
+        return;
+      }
+      nextQuestion();
+      document.getElementById("setup").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+      document.getElementById("results").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      votes = {};
+      players.forEach(p => votes[p] = 0);
+      currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+      document.getElementById("question").innerText = "¿Quién es más probable que " + currentQuestion;
+      const btnContainer = document.getElementById("playerButtons");
+      btnContainer.innerHTML = "";
+      players.forEach(player => {
+        const btn = document.createElement("button");
+        btn.innerText = player;
+        btn.onclick = () => vote(player);
+        btnContainer.appendChild(btn);
+      });
+      startTimer();
+    }
+
+    function vote(player) {
+      votes[player]++;
+      endRound();
+    }
+
+    function startTimer() {
+      timeLeft = 20;
+      document.getElementById("timer").innerText = `Tiempo restante: ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = `Tiempo restante: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          endRound();
+        }
+      }, 1000);
+    }
+
+    function endRound() {
+      clearInterval(timer);
+      document.getElementById("game").classList.add("hidden");
+      document.getElementById("results").classList.remove("hidden");
+      const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+      const rankingDiv = document.getElementById("ranking");
+      rankingDiv.innerHTML = "";
+      sorted.forEach(([name, vote]) => {
+        const p = document.createElement("p");
+        p.innerText = `${name}: ${vote} voto(s)`;
+        rankingDiv.appendChild(p);
+      });
+    }
+  </script>
+</body>
+</html>
